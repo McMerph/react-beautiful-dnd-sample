@@ -32,7 +32,12 @@ const addTaskToColumn = (column, index, toAdd) => {
 
 const IndexPage = () => {
   const [data, setData] = useState(initialData);
+  const [startIndex, setStartIndex] = useState(null);
+  const onDragStart = (start) => {
+    setStartIndex(data['column-order'].indexOf(start.source.droppableId));
+  };
   const onDragEnd = (result) => {
+    setStartIndex(null);
     const { source, destination, draggableId } = result;
     if (!destination) {
       return;
@@ -75,12 +80,21 @@ const IndexPage = () => {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
       <Wrapper>
-        {data['column-order'].map((columnId) => {
+        {data['column-order'].map((columnId, index) => {
           const column = data.columns[columnId];
           const tasks = column.taskIds.map((taskId) => data.tasks[taskId]);
-          return <Column key={column.id} column={column} tasks={tasks} />;
+          const isDropDisabled = index < startIndex;
+
+          return (
+            <Column
+              key={column.id}
+              column={column}
+              tasks={tasks}
+              isDropDisabled={isDropDisabled}
+            />
+          );
         })}
       </Wrapper>
     </DragDropContext>
