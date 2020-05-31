@@ -1,4 +1,5 @@
 import React from 'react';
+import { DragDropContext } from 'react-beautiful-dnd';
 import data from '../initial-data.json';
 import Column from '../components/column';
 
@@ -7,7 +8,16 @@ const IndexPage = () =>
     const column = data.columns[columnId];
     const tasks = column.taskIds.map((taskId) => data.tasks[taskId]);
 
-    return <Column key={column.id} column={column} tasks={tasks} />;
+    return (
+      <DragDropContext
+        key={column.id}
+        onDragEnd={() => {
+          // TODO Implement
+        }}
+      >
+        <Column column={column} tasks={tasks} />
+      </DragDropContext>
+    );
   });
 
 export default IndexPage;

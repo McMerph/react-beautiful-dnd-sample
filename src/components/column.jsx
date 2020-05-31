@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import Task from './task';
 
@@ -19,11 +20,17 @@ const TaskList = styled.div`
 const Column = ({ column, tasks }) => (
   <Wrapper>
     <Title>{column.title}</Title>
-    <TaskList>
-      {tasks.map((task) => (
-        <Task key={task.id} task={task} />
-      ))}
-    </TaskList>
+    <Droppable droppableId={column.id}>
+      {(provided) => (
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        <TaskList ref={provided.innerRef} {...provided.droppableProps}>
+          {tasks.map((task, index) => (
+            <Task key={task.id} task={task} index={index} />
+          ))}
+          {provided.placeholder}
+        </TaskList>
+      )}
+    </Droppable>
   </Wrapper>
 );
 
