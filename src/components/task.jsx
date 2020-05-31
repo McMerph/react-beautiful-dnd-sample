@@ -8,18 +8,19 @@ const Text = styled.p`
   padding: 8px;
   border: 1px solid lightgrey;
   border-radius: 2px;
-  background: #fff;
+  background-color: ${(props) => (props.isDragging ? 'lightgreen' : 'white')};
 `;
 
 const Task = ({ task, index }) => (
   <Draggable draggableId={task.id} index={index}>
-    {(provided) => (
+    {(provided, snapshot) => (
       <Text
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...provided.draggableProps}
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...provided.dragHandleProps}
         ref={provided.innerRef}
+        isDragging={snapshot.isDragging}
       >
         {task.content}
       </Text>

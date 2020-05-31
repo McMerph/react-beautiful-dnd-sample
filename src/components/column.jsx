@@ -15,15 +15,21 @@ const Title = styled.h3`
 const TaskList = styled.div`
   margin: 0;
   padding: 8px;
+  transition: background-color 200ms ease;
+  background-color: ${(props) => (props.isDraggingOver ? 'skyblue' : '#fff')};
 `;
 
 const Column = ({ column, tasks }) => (
   <Wrapper>
     <Title>{column.title}</Title>
     <Droppable droppableId={column.id}>
-      {(provided) => (
-        // eslint-disable-next-line react/jsx-props-no-spreading
-        <TaskList ref={provided.innerRef} {...provided.droppableProps}>
+      {(provided, snapshot) => (
+        <TaskList
+          ref={provided.innerRef}
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...provided.droppableProps}
+          isDraggingOver={snapshot.isDraggingOver}
+        >
           {tasks.map((task, index) => (
             <Task key={task.id} task={task} index={index} />
           ))}
