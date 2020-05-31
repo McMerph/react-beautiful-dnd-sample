@@ -7,6 +7,7 @@ import Task from './task';
 const Wrapper = styled.div`
   margin: 8px;
   border: 1px solid lightgrey;
+  border-radius: 2px;
 `;
 const Title = styled.h3`
   margin: 0;

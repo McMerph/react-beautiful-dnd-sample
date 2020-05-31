@@ -9,6 +9,7 @@ const Text = styled.p`
   border: 1px solid lightgrey;
   border-radius: 2px;
   background-color: ${(props) => (props.isDragging ? 'lightgreen' : 'white')};
+  user-select: none;
 `;
 
 const Task = ({ task, index }) => (
