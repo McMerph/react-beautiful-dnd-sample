@@ -26,10 +26,13 @@ const TaskList = styled.div`
   min-height: 100px;
 `;
 
-const Column = ({ column, tasks, isDropDisabled }) => (
+const Column = ({ column, tasks }) => (
   <Wrapper>
     <Title>{column.title}</Title>
-    <Droppable droppableId={column.id} isDropDisabled={isDropDisabled}>
+    <Droppable
+      droppableId={column.id}
+      type={column.id === 'column-3' ? 'done' : 'active'}
+    >
       {(provided, snapshot) => (
         <TaskList
           ref={provided.innerRef}
@@ -59,7 +62,6 @@ Column.propTypes = {
       content: PropTypes.string.isRequired,
     }).isRequired
   ).isRequired,
-  isDropDisabled: PropTypes.bool.isRequired,
 };
 
 export default Column;
