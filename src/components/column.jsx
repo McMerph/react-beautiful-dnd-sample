@@ -8,6 +8,7 @@ const Wrapper = styled.div`
   margin: 8px;
   border: 1px solid lightgrey;
   border-radius: 2px;
+  flex: 0 0 220px;
 
   display: flex;
   flex-direction: column;
@@ -21,18 +22,14 @@ const TaskList = styled.div`
   padding: 8px;
   transition: background-color 200ms ease;
   background-color: ${(props) => (props.isDraggingOver ? 'skyblue' : '#fff')};
-
-  display: flex;
+  flex-grow: 1;
+  min-height: 100px;
 `;
 
 const Column = ({ column, tasks, isDropDisabled }) => (
   <Wrapper>
     <Title>{column.title}</Title>
-    <Droppable
-      droppableId={column.id}
-      isDropDisabled={isDropDisabled}
-      direction="horizontal"
-    >
+    <Droppable droppableId={column.id} isDropDisabled={isDropDisabled}>
       {(provided, snapshot) => (
         <TaskList
           ref={provided.innerRef}
