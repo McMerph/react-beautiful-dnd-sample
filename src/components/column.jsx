@@ -29,10 +29,7 @@ const TaskList = styled.div`
 const Column = ({ column, tasks }) => (
   <Wrapper>
     <Title>{column.title}</Title>
-    <Droppable
-      droppableId={column.id}
-      type={column.id === 'column-3' ? 'done' : 'active'}
-    >
+    <Droppable droppableId={column.id}>
       {(provided, snapshot) => (
         <TaskList
           ref={provided.innerRef}
