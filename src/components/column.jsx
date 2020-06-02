@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Droppable } from 'react-beautiful-dnd';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import Task from './task';
 
@@ -8,6 +8,7 @@ const Wrapper = styled.div`
   margin: 8px;
   border: 1px solid lightgrey;
   border-radius: 2px;
+  background-color: #fff;
   flex: 0 0 220px;
 
   display: flex;
@@ -21,30 +22,40 @@ const TaskList = styled.div`
   margin: 0;
   padding: 8px;
   transition: background-color 200ms ease;
-  background-color: ${(props) => (props.isDraggingOver ? 'skyblue' : '#fff')};
+  background-color: ${(props) =>
+    props.isDraggingOver ? 'skyblue' : 'inherit'};
   flex-grow: 1;
   min-height: 100px;
 `;
 
-const Column = ({ column, tasks }) => (
-  <Wrapper>
-    <Title>{column.title}</Title>
-    <Droppable droppableId={column.id}>
-      {(provided, snapshot) => (
-        <TaskList
-          ref={provided.innerRef}
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...provided.droppableProps}
-          isDraggingOver={snapshot.isDraggingOver}
-        >
-          {tasks.map((task, index) => (
-            <Task key={task.id} task={task} index={index} />
-          ))}
-          {provided.placeholder}
-        </TaskList>
-      )}
-    </Droppable>
-  </Wrapper>
+const Column = ({ column, tasks, index }) => (
+  <Draggable draggableId={column.id} index={index}>
+    {(providedDraggable) => (
+      <Wrapper
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...providedDraggable.draggableProps}
+        ref={providedDraggable.innerRef}
+      >
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        <Title {...providedDraggable.dragHandleProps}>{column.title}</Title>
+        <Droppable droppableId={column.id} type="task">
+          {(providedDroppable, snapshot) => (
+            <TaskList
+              ref={providedDroppable.innerRef}
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...providedDroppable.droppableProps}
+              isDraggingOver={snapshot.isDraggingOver}
+            >
+              {tasks.map((task, taskIndex) => (
+                <Task key={task.id} task={task} index={taskIndex} />
+              ))}
+              {providedDroppable.placeholder}
+            </TaskList>
+          )}
+        </Droppable>
+      </Wrapper>
+    )}
+  </Draggable>
 );
 
 Column.propTypes = {
@@ -59,6 +70,7 @@ Column.propTypes = {
       content: PropTypes.string.isRequired,
     }).isRequired
   ).isRequired,
+  index: PropTypes.number.isRequired,
 };
 
 export default Column;

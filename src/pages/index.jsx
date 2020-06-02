@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { DragDropContext } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import initialData from '../initial-data.json';
 import Column from '../components/column';
 
@@ -8,12 +8,12 @@ const Wrapper = styled.div`
   display: flex;
 `;
 
-const moveTaskInsideColumn = (column, startIndex, finishIndex, toMove) => {
-  const newTaskIds = Array.from(column.taskIds);
-  newTaskIds.splice(startIndex, 1);
-  newTaskIds.splice(finishIndex, 0, toMove);
+const move = (prev, key, startIndex, finishIndex, toMove) => {
+  const updated = Array.from(prev[key]);
+  updated.splice(startIndex, 1);
+  updated.splice(finishIndex, 0, toMove);
 
-  return { ...column, taskIds: newTaskIds };
+  return { ...prev, [key]: updated };
 };
 
 const removeTaskFromColumn = (column, index) => {
@@ -33,7 +33,7 @@ const addTaskToColumn = (column, index, toAdd) => {
 const IndexPage = () => {
   const [data, setData] = useState(initialData);
   const onDragEnd = (result) => {
-    const { source, destination, draggableId } = result;
+    const { source, destination, draggableId, type } = result;
     if (!destination) {
       return;
     }
@@ -44,12 +44,20 @@ const IndexPage = () => {
       return;
     }
 
+    if (type === 'column') {
+      setData((prev) =>
+        move(prev, 'column-order', source.index, destination.index, draggableId)
+      );
+      return;
+    }
+
     setData((prev) => {
       const start = prev.columns[source.droppableId];
       const finish = prev.columns[destination.droppableId];
       if (start === finish) {
-        const newColumn = moveTaskInsideColumn(
+        const newColumn = move(
           start,
+          'taskIds',
           source.index,
           destination.index,
           draggableId
@@ -76,13 +84,26 @@ const IndexPage = () => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Wrapper>
-        {data['column-order'].map((columnId) => {
-          const column = data.columns[columnId];
-          const tasks = column.taskIds.map((taskId) => data.tasks[taskId]);
-          return <Column key={column.id} column={column} tasks={tasks} />;
-        })}
-      </Wrapper>
+      <Droppable droppableId="all-columns" direction="horizontal" type="column">
+        {(provided) => (
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          <Wrapper {...provided.droppableProps} ref={provided.innerRef}>
+            {data['column-order'].map((columnId, index) => {
+              const column = data.columns[columnId];
+              const tasks = column.taskIds.map((taskId) => data.tasks[taskId]);
+              return (
+                <Column
+                  key={column.id}
+                  column={column}
+                  tasks={tasks}
+                  index={index}
+                />
+              );
+            })}
+            {provided.placeholder}
+          </Wrapper>
+        )}
+      </Droppable>
     </DragDropContext>
   );
 };
