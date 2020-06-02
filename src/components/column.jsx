@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import Task from './task';
+import Tasks, { taskPropType } from './task';
 
 const Wrapper = styled.div`
   margin: 8px;
@@ -28,7 +28,7 @@ const TaskList = styled.div`
   min-height: 100px;
 `;
 
-const Column = ({ column, tasks, index }) => (
+const Column = memo(({ column, allTasks, index }) => (
   <Draggable draggableId={column.id} index={index}>
     {(providedDraggable) => (
       <Wrapper
@@ -46,9 +46,7 @@ const Column = ({ column, tasks, index }) => (
               {...providedDroppable.droppableProps}
               isDraggingOver={snapshot.isDraggingOver}
             >
-              {tasks.map((task, taskIndex) => (
-                <Task key={task.id} task={task} index={taskIndex} />
-              ))}
+              <Tasks tasks={column.taskIds.map((taskId) => allTasks[taskId])} />
               {providedDroppable.placeholder}
             </TaskList>
           )}
@@ -56,20 +54,14 @@ const Column = ({ column, tasks, index }) => (
       </Wrapper>
     )}
   </Draggable>
-);
-
+));
 Column.propTypes = {
   column: PropTypes.exact({
     id: PropTypes.string.isRequired,
     taskIds: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
     title: PropTypes.string.isRequired,
   }).isRequired,
-  tasks: PropTypes.arrayOf(
-    PropTypes.exact({
-      id: PropTypes.string.isRequired,
-      content: PropTypes.string.isRequired,
-    }).isRequired
-  ).isRequired,
+  allTasks: PropTypes.objectOf(taskPropType.isRequired).isRequired,
   index: PropTypes.number.isRequired,
 };
 

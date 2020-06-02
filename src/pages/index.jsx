@@ -88,18 +88,14 @@ const IndexPage = () => {
         {(provided) => (
           // eslint-disable-next-line react/jsx-props-no-spreading
           <Wrapper {...provided.droppableProps} ref={provided.innerRef}>
-            {data['column-order'].map((columnId, index) => {
-              const column = data.columns[columnId];
-              const tasks = column.taskIds.map((taskId) => data.tasks[taskId]);
-              return (
-                <Column
-                  key={column.id}
-                  column={column}
-                  tasks={tasks}
-                  index={index}
-                />
-              );
-            })}
+            {data['column-order'].map((columnId, index) => (
+              <Column
+                key={columnId}
+                column={data.columns[columnId]}
+                allTasks={data.tasks}
+                index={index}
+              />
+            ))}
             {provided.placeholder}
           </Wrapper>
         )}

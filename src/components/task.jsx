@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import { Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
@@ -11,6 +11,11 @@ const Text = styled.p`
   background-color: ${(props) => (props.isDragging ? 'lightgreen' : 'white')};
   user-select: none;
 `;
+
+export const taskPropType = PropTypes.exact({
+  id: PropTypes.string.isRequired,
+  content: PropTypes.string.isRequired,
+});
 
 const Task = ({ task, index }) => (
   <Draggable draggableId={task.id} index={index}>
@@ -28,13 +33,16 @@ const Task = ({ task, index }) => (
     )}
   </Draggable>
 );
-
 Task.propTypes = {
-  task: PropTypes.exact({
-    id: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-  }).isRequired,
+  task: taskPropType.isRequired,
   index: PropTypes.number.isRequired,
 };
 
-export default Task;
+const Tasks = memo(({ tasks }) =>
+  tasks.map((task, index) => <Task key={task.id} task={task} index={index} />)
+);
+Tasks.propTypes = {
+  tasks: PropTypes.arrayOf(taskPropType.isRequired).isRequired,
+};
+
+export default Tasks;
