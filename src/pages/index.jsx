@@ -32,11 +32,29 @@ const addTaskToColumn = (column, index, toAdd) => {
 
 const IndexPage = () => {
   const [data, setData] = useState(initialData);
-  const onDragEnd = (result) => {
+  const onDragStart = (start, provided) => {
+    provided.announce(
+      `You have lifted the task in position ${start.source.index + 1}`
+    );
+  };
+  const onDragUpdate = (update, provided) => {
+    const message = update.destination
+      ? `You have moved the task to position ${update.destination.index + 1}`
+      : `You are currently not over a droppable area`;
+    provided.announce(message);
+  };
+  const onDragEnd = (result, provided) => {
     const { source, destination, draggableId, type } = result;
+    const fromPosition = source.index + 1;
     if (!destination) {
+      const message = `The task has been returned to its starting position of ${fromPosition}`;
+      provided.announce(message);
       return;
     }
+
+    const toPosition = destination.index + 1;
+    const message = `You have moved the task from position ${fromPosition} to ${toPosition}`;
+    provided.announce(message);
     const noChange =
       destination.droppableId === source.droppableId &&
       destination.index === source.index;
@@ -83,7 +101,11 @@ const IndexPage = () => {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext
+      onDragStart={onDragStart}
+      onDragUpdate={onDragUpdate}
+      onDragEnd={onDragEnd}
+    >
       <Droppable droppableId="all-columns" direction="horizontal" type="column">
         {(provided) => (
           // eslint-disable-next-line react/jsx-props-no-spreading

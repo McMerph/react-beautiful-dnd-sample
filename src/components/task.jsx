@@ -27,6 +27,7 @@ const Task = ({ task, index }) => (
         {...provided.dragHandleProps}
         ref={provided.innerRef}
         isDragging={snapshot.isDragging}
+        aria-roledescription="Press space bar to lift the task"
       >
         {task.content}
       </Text>
